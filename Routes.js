@@ -121,7 +121,7 @@ const deleteLabels = async function (req, res) {
 const updateLabels = async function (req, res) {
     const { username, oldLabel, newLabel } = req.body;
     const queryForCheckingLabel = `
-    SELECT * FROM users WHERE name = '${username}' AND  labels like '%${newLabel}%';
+    SELECT * FROM users WHERE name = '${username}' AND  labels like '${newLabel}';
     `
 
     const queryForUpdatingLabel = `
@@ -139,7 +139,7 @@ const updateLabels = async function (req, res) {
 
         if (checkNewLabel.length != 0) {
             // corner case: if the newLabel exists, do nothing
-            res.status(400).send('Label already exists');
+            res.status(400).send('Label already exists or Label does not exist.');
         } else {
             // if the label doesn't exist, update it.
             DBconnect.query(queryForUpdatingLabel, (err, result) => {
@@ -148,7 +148,7 @@ const updateLabels = async function (req, res) {
                     res.status(500).send('Error updating label');
                 }
                 if (result.changedRows === 0) {
-                    res.status(400).send('Label does not exist');
+                    res.status(400).send('Label already exists or Label does not exist.');
                 } else {
                     res.status(200).send('Label updated successfully');
                 }
